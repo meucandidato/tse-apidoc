@@ -55,6 +55,294 @@ paths:
             $ref: "#/definitions/EleicaoAtual"
         500:
           description: "Erro interno no servidor"
+  /eleicao/anos-eleitorais:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna a lista de anos eleitorais até o atual"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Retorna lista de anos eleitorais"
+          schema:
+            $ref: "#/definitions/AnosEleitorais"
+        500:
+          description: "Erro interno no servidor"
+  /eleicao/ufs:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna a lista de estados da Federação"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Retorna lista de estados"
+          schema:
+            $ref: "#/definitions/ListaUnidadesFederativas"
+        500:
+          description: "Erro interno no servidor"
+  /eleicao/ufs/{uf}/municipios:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna lista municípios de um determinado estado"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "uf"
+        in: "path"
+        description: "Unidade Federativa"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Retorna lista de municípios"
+          schema:
+            $ref: "#/definitions/ListaMunicipios"
+        500:
+          description: "Erro interno no servidor"
+  /eleicao/uf/{sqEleicao}/{uf}/municipios:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna os municípios que participam da eleição"
+      description: "Esse endpoint retorna uma lista de municípios que faz parte da eleição a partir do seu código sequencial"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "uf"
+        in: "path"
+        description: "Unidade Federativa (ex.: GO)"
+        required: true
+        type: "string"
+      - name: "sqEleicao"
+        in: "path"
+        description: "Código Sequencial da eleição"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Retorna os municípios participantes da eleição. No caso do DF só retorna o estado."
+          schema:
+            $ref: "#/definitions/EleicaoMunicipios"
+        500:
+          description: "Erro interno no servidor"
+  /eleicao/estados/{ano}/ano:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna lista de estados vinculados ao ano da eleição"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "ano"
+        in: "path"
+        description: "Ano eleitoral (ex.: 2018)"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Retorna lista de siglas de Unidades Federativas"
+          schema:
+            $ref: "#/definitions/UnidadesFederativasEleicao"
+        500:
+          description: "Erro interno no servidor"
+  /eleicao/{sqEleicao}/cargos:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna lista de cargos disponíveis para aquela eleição"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "sqEleicao"
+        in: "path"
+        description: "Código sequencial da eleição (ex.: 2022802018)"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Retorna lista de cargos da eleição selecionada"
+          schema:
+            $ref: "#/definitions/ListaCargos"
+        500:
+          description: "Erro interno no servidor"
+  /eleicao/ordinarias:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna lista de informações básicas das eleições"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Retorna a lista de informações das eleições"
+          schema:
+            $ref: "#/definitions/ListaEleicaoDadosBasicos"
+        500:
+          description: "Erro interno no servidor"
+  /eleicao/ordinaria/{ano}:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna informações básicas acerca do ano da eleição"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "ano"
+        in: "path"
+        description: "Ano eleitoral (ex.: 2018)"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Retorna as informações da eleição"
+          schema:
+            $ref: "#/definitions/EleicaoDadosBasicos"
+        500:
+          description: "Erro interno no servidor"
+  /eleicao/suplementares/{ano}/{siglaUE}:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna informações das eleições suplementares"
+      description: "As eleições suplementares são convocadas quando há condenação eleitoral ou criminal, abuso de poder político, compra de votos, cassação de mandato, entre outros casos.<br><br>Esse endpoint retorna a lista de municípios de uma Unidade Eleitoral houve eleições suplementares em um determinado ano eleitoral."
+      produces:
+        - "application/json"
+      parameters:
+      - name: "ano"
+        in: "path"
+        description: "Ano eleitoral (ex.: 2018)"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "siglaUE"
+        in: "path"
+        description: "Sigla da Unidade Eleitoral (ex.: GO)"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Retorna a lista das eleições suplementares. Caso não tenha, retorna uma lista vazia"
+          schema:
+            $ref: "#/definitions/ListaEleicaoDadosBasicos"
+        500:
+          description: "Erro interno no servidor"
+  /eleicao/buscar/{uf}/{sqEleicao}/municipios:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna os municípios que participam da eleição"
+      description: "Esse endpoint retorna uma lista de municípios que faz parte da eleição a partir do seu código sequencial"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "uf"
+        in: "path"
+        description: "Unidade Federativa (ex.: GO)"
+        required: true
+        type: "string"
+      - name: "sqEleicao"
+        in: "path"
+        description: "Código Sequencial da eleição"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Retorna os municípios participantes da eleição. No caso do DF só retorna o estado."
+          schema:
+            $ref: "#/definitions/EleicaoMunicipios"
+        500:
+          description: "Erro interno no servidor"
+  /eleicao/listar/municipios/{sqEleicao}/{sgUE}/cargos:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna os cargos disponíveis na eleição"
+      description: "Esse endpoint retorna uma lista de cargos disponíveis na eleição selecionada, de uma determinada Unidade Eleitoral"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "sqEleicao"
+        in: "path"
+        description: "Código sequencial da eleição"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "sgUE"
+        in: "path"
+        description: "Sigla da Unidade Eleitoral"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Retorna os cargos disponíveis para a unidade eleitoral"
+          schema:
+            $ref: "#/definitions/UnidadeEleitoral"
+        500:
+          description: "Erro interno no servidor"
+  /eleicao/estatistica/{sqEleicao}/total:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna dados estatísticos de acesso no sistema"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "sqEleicao"
+        in: "path"
+        description: "Código sequencial da eleição"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Retorna os dados estatísticos de acesso do sistema"
+          schema:
+            $ref: "#/definitions/DadosAcessoSite"
+        500:
+          description: "Erro interno no servidor"
+  /eleicao/estatistica/{sqEleicao}/{sgUE}/{cargo}/personalizada:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna os mais acessados no sistema por cargo"
+      description: "Esse endpoint retorna uma lista de acesso de candidatos, filtrados pelo cargo selecionado, como também ordenado a partir do mais acesso até o menos acessado no sistema"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "sqEleicao"
+        in: "path"
+        description: "Código sequencial da eleição"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "sgUE"
+        in: "path"
+        description: "Unidade Eleitoral"
+        required: true
+        type: "string"
+      - name: "cargo"
+        in: "path"
+        description: "Código do cargo (ex.: 7) [Deputado Estadual]"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Retorna os dados estatísticos de acesso por cargo"
+          schema:
+            $ref: "#/definitions/DadosAcessoCargo"
+        500:
+          description: "Erro interno no servidor"
+      
 definitions:
   ServerStatus:
     type: "object"
@@ -168,6 +456,191 @@ definitions:
       contagem:
         type: "integer"
         description: "Total dos que se apresentaram a essa candidatura"
+        
+  AnosEleitorais:
+    type: "array"
+    items:
+      type: "integer"
+      
+  UnidadesFederativasEleicao:
+    type: "array"
+    items:
+      type: "string"
+      
+  EleicaoDadosBasicos:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "Código da eleição. Para os últimos dados, é o código sequencial"
+      siglaUF:
+        type: "string"
+        description: "Sigla da Unidade Federativa"
+      localidadeSgUe:
+        type: "string"
+        description: "Localidade da Unidade Eleitoral"
+      ano:
+        type: "integer"
+        description: "Ano da Eleição"
+      nomeEleicao:
+        type: "string"
+        description: "Nome da Eleição"
+      tipoEleicao:
+        type: "string"
+        description: "Tipo da Eleição"
+      tipoAbrangencia:
+        type: "string"
+        description: "Abrangência da Eleição"
+      dataEleicao:
+        type: "string"
+        format: "date"
+        description: "Data em que a Eleição ocorreu"
+      codSituacaoEleicao:
+        type: "integer"
+        description: "Código da situação da Eleição"
+      descricaoSituacaoEleicao:
+        type: "string"
+        description: "Descrição da situação da Eleição"
+      descricaoEleicao:
+        type: "string"
+        description: "Descrição da Eleição"
+        
+  ListaEleicaoDadosBasicos:
+    type: "array"
+    items:
+      $ref: "#/definitions/EleicaoDadosBasicos"
+      
+  EleicaoLocalidade:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "Identificação do Estado"
+      sigla:
+        type: "string"
+        description: "Sigla do Estado"
+      nome:
+        type: "string"
+        description: "Nome do Estado"
+      regiao:
+        type: "string"
+        description: "Região do Estado"
+      cargos:
+        type: "array"
+        items:
+          type: "object"
+      diretorios:
+        type: "array"
+        items:
+          type: "object"
+      codigo:
+        type: "string"
+        description: "Código do Estado"
+      capital:
+        type: "boolean"
+        description: "Se essa localidade é uma capital ou não"
+      estado:
+        type: "string"
+        description: "Estado da localidade. No caso de um estado, será sempre 'Brasil'"
+      
+  EleicaoMunicipios:
+    type: "object"
+    properties:
+      estado:
+        $ref: "#/definitions/EleicaoLocalidade"
+      municipios:
+        type: "array"
+        description: "Lista de municípios"
+        items:
+          $ref: "#/definitions/EleicaoLocalidade"
+          
+  UnidadeEleitoral:
+    type: "object"
+    properties:
+      unidadeEleitoralDTO:
+        $ref: "#/definitions/EleicaoLocalidade"
+      cargos:
+        type: "array"
+        items:
+          $ref: "#/definitions/ResumoCandidaturas"
+          
+  ListaCargos:
+    type: "array"
+    items:
+      $ref: "#/definitions/ResumoCandidaturas"
+      
+  Localidade:
+    type: "object"
+    properties:
+      sigla:
+        type: "string"
+        description: "Sigla da localidade. As vezes é UF e outras é somente um código como nas cidades"
+      nome:
+        type: "string"
+        description: "Nome da Localidade (Estado ou Município)"
+      siglaSuperior:
+        type: "string"
+        description: "Sigla da Unidade Federativa"
+        
+  ListaUnidadesFederativas:
+    type: "array"
+    items:
+      $ref: "#/definitions/Localidade"
+      
+  ListaMunicipios:
+    type: "array"
+    items:
+      $ref: "#/definitions/Localidade"
+      
+  DadosAcessoDiario:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      nome:
+        type: "string"
+      nrCandidato:
+        type: "integer"
+      sgPartido:
+        type: "string"
+      nmColigacao:
+        type: "string"
+      sgUe:
+        type: "string"
+      data:
+        type: "string"
+        format: "date"
+      qntAcesso:
+        type: "integer"
+      qntAcessoFormatada:
+        type: "string"
+      urlFoto:
+        type: "string"
+      
+  DadosAcessoSite:
+    type: "object"
+    properties:
+      totalAcesso:
+        type: "integer"
+        description: "Total de Acesso ao sistema no momento da requisição do endpoint"
+      ultimosAcessos:
+        type: "array"
+        description: "Histórico de acessos diários no sistema"
+        items:
+          $ref: "#/definitions/DadosAcessoDiario"
+          
+  DadosAcessoCargo:
+    type: "object"
+    properties:
+      totalAcessoDaUf:
+        type: "integer"
+        description: "Total de Acesso de candidatos de um cargo por estado"
+      acessos:
+        type: "array"
+        description: "Lista de acessos de candidatos por cargo"
+        items:
+          $ref: "#/definitions/DadosAcessoDiario"
+      
 externalDocs:
   description: "Mais informações acessem o site do TSE"
   url: "http://www.tse.jus.br"
