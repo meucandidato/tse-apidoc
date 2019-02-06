@@ -1,0 +1,173 @@
+swagger: "2.0"
+info:
+  description: "Essa documentação foi baseado na engenharia reversa da API do serviço [Divulgação de Candidaturas e Contas Eleitorais](http://divulgacandcontas.tse.jus.br/divulga/#/) do TSE, com o intuito de facititar o entendimento de como acessar os dados da API."
+  version: "1.0.0"
+  title: "Divulgação de Candidaturas e Contas Eleitorais API"
+host: "divulgacandcontas.tse.jus.br"
+basePath: "/divulga/rest/v1"
+tags:
+- name: "eleicoes"
+  description: "Todas informações referentes as eleições"
+- name: "candidato"
+  description: "Todas informações referentes aos candidatos"
+- name: "prestador"
+  description: "Todas as informações de prestadores e suas doações a candidatos"
+- name: "doadores"
+  description: "Informações relacionados aos doadores e fornecedores"
+- name: "gastos"
+  description: "Informações relacionados aos gastos e seus limites"
+schemes:
+- "http"
+paths:
+  /eleicao/database/monitor:
+    get:
+      tags:
+      - "eleicoes"
+      summary: "Verifica o status do servidor"
+      description: ""
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Servidor disponível"
+          schema:
+            $ref: "#/definitions/ServerStatus"
+        500:
+          description: "Erro interno no servidor, então indisponível"
+  /eleicao/eleicao-atual:
+    get:
+      tags:
+        - "eleicoes"
+      summary: "Retorna os detalhes da eleição atual"
+      description: "As informações retornadas envolve cada unidade eleitoral, seus cargos e diretórios"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "idEleicao"
+        in: "query"
+        description: "Identificador da eleição (ex.: 2022802018) [Eleição de 2018]"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "Retorna lista de Unidades Eleitorais e seus cargos e diretórios"
+          schema:
+            $ref: "#/definitions/EleicaoAtual"
+        500:
+          description: "Erro interno no servidor"
+definitions:
+  ServerStatus:
+    type: "object"
+    properties:
+      status:
+        type: "string"
+        description: "Status do Servidor"
+        enum:
+          - "Success"
+      mensage:
+        type: "string"
+        description: "Mensagem humanizada do status do servidor"
+
+  EleicaoAtual:
+    type: "object"
+    properties:
+      ues:
+        type: "array"
+        description: "Lista de Unidades Eleitorais da Eleição"
+        items:
+          $ref: "#/definitions/UnidadeEleitoralEleicao"
+      eleicao:
+        $ref: "#/definitions/EleicaoAtualDetalhes"
+      anosDeReferencia:
+        type: "string"
+      resumoCandidaturas:
+        type: "array"
+        description: "Lista do resumo das candidaturas"
+        items:
+          $ref: "#/definitions/ResumoCandidaturas"
+      dataBaseUpdate:
+        type: "string"
+        format: "date-time"
+        description: "Data em que os dados foram atualizados"
+
+  UnidadeEleitoralEleicao:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "Identificador da Unidade Eleitoral"
+      sigla:
+        type: "string"
+        description: "Sigla da Unidade Eleitoral"
+      nome:
+        type: "string"
+        description: "Nome da Unidade Eleitoral"
+      regiao:
+        type: "string"
+        description: "Região da Unidade Eleitoral"
+      cargos:
+        type: "array"
+        description: "Lista de cargos disponíveis para essa Unidade Eleitoral"
+        items:
+          $ref: "#/definitions/ResumoCandidaturas"
+        
+  EleicaoAtualDetalhes:
+    type: "object"
+    properties:
+      sq_ELEICAO:
+        type: "integer"
+        description: "Código sequencial da eleição"
+      tp_ABRANGENCIA:
+        type: "string"
+        description: "Tipo da abrangência (Federal, Estadual e Municipal)"
+        enum:
+          - "F"
+          - "E"
+          - "M"
+      nm_ELEICAO:
+        type: "string"
+        description: "Nome da Eleição"
+      nr_ANO_BASE:
+        type: "integer"
+        description: "Ano Base da Eleição"
+      cd_ELEICAO:
+        type: "integer"
+        description: "Código da Eleição"
+      dt_ELEICAO:
+        type: "string"
+        format: "date"
+        description: "Data em que a eleição ocorreu"
+      tp_ELEICAO:
+        type: "string"
+        description: "Tipo da Eleição"
+      nr_ANO_REFERENCIA:
+        type: "integer"
+        description: "Número do Ano de Referência"
+      cd_PLEITO:
+        type: "integer"
+        description: "Código do Pleito"
+        
+  ResumoCandidaturas:
+    type: "object"
+    properties:
+      codigo:
+        type: "integer"
+        description: "Código da Candidatura"
+      sigla:
+        type: "string"
+        description: "Sigla da Candidatura"
+      nome:
+        type: "string"
+        description: "Nome da Candidatura"
+      codSuperior:
+        type: "integer"
+        description: "Código superior da Candidatura"
+      titular:
+        type: "boolean"
+        description: ""
+      contagem:
+        type: "integer"
+        description: "Total dos que se apresentaram a essa candidatura"
+externalDocs:
+  description: "Mais informações acessem o site do TSE"
+  url: "http://www.tse.jus.br"
